@@ -74,11 +74,11 @@
     <span class="tag">Hà Nam</span><span class="tag">Nam Định</span><span class="tag">Ninh Bình</span>
   </div>
 
-  <div class="src">
-    <span class="st">🔗 Link CSV Google Sheet:</span>
-    <input id="url" placeholder="Dán link .../gviz/tq?tqx=out:csv&gid=... hoặc link Publish to web (.csv)">
-    <button onclick="loadFromUrl()">Tải & Cập nhật</button>
-    <span class="st" id="srcState">Đang hiển thị dữ liệu mẫu</span>
+  <!-- Ô link được ẩn: link tự tải ngầm, người xem không thấy đường dẫn -->
+  <input id="url" type="hidden">
+  <div class="src" style="justify-content:flex-end">
+    <span class="st" id="srcState">Đang tải dữ liệu…</span>
+    <button onclick="loadFromUrl()" title="Làm mới dữ liệu" style="padding:7px 14px">🔄 Làm mới</button>
   </div>
 
   <div class="kpis" id="kpis"></div>
