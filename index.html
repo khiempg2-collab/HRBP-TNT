@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Nghỉ việc · GHN Vùng TNT</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#0a1628; --bg2:#0f1f3d; --card:#132743; --card2:#1a3358;
+    --line:#22406b; --txt:#e8eef7; --txt2:#9db3d1; --accent:#3b82f6;
+    --accent2:#60a5fa; --r:#ef4444; --o:#f97316; --y:#eab308; --g:#22c55e;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    background:linear-gradient(160deg,var(--bg) 0%,var(--bg2) 60%,#0a1c3a 100%);
+    background-attachment:fixed; color:var(--txt); min-height:100vh; padding:24px;
+  }
+  .wrap{max-width:1400px;margin:0 auto}
+  header.top{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:8px}
+  .logo{background:#fff;border-radius:8px;padding:6px 12px;font-weight:800;color:#ee4d2d;font-size:14px}
+  .badge{background:var(--card2);border:1px solid var(--line);border-radius:8px;padding:6px 14px;font-size:12px;letter-spacing:2px;font-weight:700;color:var(--txt2)}
+  .eyebrow{color:var(--accent2);font-size:12px;letter-spacing:3px;font-weight:700;margin:18px 0 6px}
+  h1{font-size:32px;font-weight:800;line-height:1.15;margin-bottom:6px}
+  h1 .b{color:var(--accent2)}
+  .sub{color:var(--txt2);font-size:14px;margin-bottom:8px}
+  .tags{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+  .tag{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:5px 14px;font-size:13px;color:var(--txt2)}
+  .src{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:16px 0;padding:12px 16px;background:var(--card);border:1px solid var(--line);border-radius:12px}
+  .src input{flex:1;min-width:280px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 12px;color:var(--txt);font-size:13px}
+  .src button{background:var(--accent);border:none;border-radius:8px;padding:9px 18px;color:#fff;font-weight:700;cursor:pointer;font-size:13px}
+  .src button:hover{background:#2563eb}
+  .src .st{font-size:12px;color:var(--txt2)}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin:22px 0}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;position:relative;overflow:hidden}
+  .kpi::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:var(--accent)}
+  .kpi .l{font-size:12px;color:var(--txt2);letter-spacing:.5px;margin-bottom:8px;text-transform:uppercase}
+  .kpi .v{font-size:34px;font-weight:800;line-height:1}
+  .kpi .d{font-size:12px;margin-top:6px}
+  .up{color:var(--r)} .down{color:var(--g)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
+  @media(max-width:900px){.grid2{grid-template-columns:1fr}}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px}
+  .panel h3{font-size:15px;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+  .panel h3 .dot{width:8px;height:8px;border-radius:50%;background:var(--accent2)}
+  .chartbox{position:relative;height:300px}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line)}
+  th{color:var(--txt2);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+  td.num{text-align:right;font-variant-numeric:tabular-nums}
+  tr:hover td{background:var(--card2)}
+  .pill{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700}
+  .p-r{background:rgba(239,68,68,.18);color:#fca5a5}
+  .p-o{background:rgba(249,115,22,.18);color:#fdba74}
+  .p-y{background:rgba(234,179,8,.18);color:#fde047}
+  .p-g{background:rgba(34,197,94,.18);color:#86efac}
+  .scroll{max-height:360px;overflow:auto}
+  .foot{color:var(--txt2);font-size:12px;text-align:center;margin-top:24px;padding-top:16px;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="logo">GiaoHangNhanh</div>
+    <div class="badge">VÙNG TNT</div>
+  </header>
+  <div class="eyebrow">BÁO CÁO VẬN HÀNH · OPERATIONS REPORT</div>
+  <h1>Dashboard Nghỉ việc <span class="b">— Vùng TNT</span></h1>
+  <div class="sub">HR Analytics · Cập nhật tự động từ Google Sheet · <span id="ts">—</span></div>
+  <div class="tags">
+    <span class="tag">Phú Thọ</span><span class="tag">Vĩnh Phúc</span><span class="tag">Hòa Bình</span>
+    <span class="tag">Hà Nam</span><span class="tag">Nam Định</span><span class="tag">Ninh Bình</span>
+  </div>
+
+  <div class="src">
+    <span class="st">🔗 Link CSV Google Sheet:</span>
+    <input id="url" placeholder="Dán link .../gviz/tq?tqx=out:csv&gid=... hoặc link Publish to web (.csv)">
+    <button onclick="loadFromUrl()">Tải & Cập nhật</button>
+    <span class="st" id="srcState">Đang hiển thị dữ liệu mẫu</span>
+  </div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="grid2">
+    <div class="panel">
+      <h3><span class="dot"></span>Nghỉ việc 3 tháng (4-5-6) theo Tỉnh</h3>
+      <div class="chartbox"><canvas id="chartTinh"></canvas></div>
+    </div>
+    <div class="panel">
+      <h3><span class="dot"></span>Top AM nghỉ việc theo tuần (W25-W28)</h3>
+      <div class="chartbox"><canvas id="chartAM"></canvas></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h3><span class="dot"></span>Chi tiết nghỉ việc theo AM · W25→W28 &amp; xu hướng</h3>
+    <div class="scroll">
+      <table id="tblAM">
+        <thead><tr>
+          <th>AM phụ trách</th><th class="num">W25</th><th class="num">W26</th>
+          <th class="num">W27</th><th class="num">W28</th><th class="num">Tổng</th>
+          <th class="num">Δ W28/W27</th><th>Đánh giá</th><th>Mức độ ảnh hưởng</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="foot">GHN · Vùng TNT · HRBP Analytics — Dashboard tự động hóa</div>
+</div>
+
+<script>
+// ===== DỮ LIỆU MẪU (từ file bạn cung cấp) =====
+const SAMPLE = {
+  tinh: [
+    ["Vĩnh Phúc",31,23,8,62,-15],["Hòa Bình",17,16,15,48,-1],
+    ["Phú Thọ",8,21,8,37,-13],["Hà Nam",14,9,8,31,-1],
+    ["Nam Định",11,10,4,25,-6],["Ninh Bình",11,7,5,23,-2]
+  ],
+  am: [
+    ["Lê Thanh Tuấn",0,4,5,5,14,0,"Có cải thiện","3. Rủi ro vận hành"],
+    ["Phùng Văn Đồng",2,5,0,4,11,4,"Cảnh báo","3. Rủi ro vận hành"],
+    ["Phạm Hoài Linh",4,2,1,4,11,3,"Cảnh báo","3. Rủi ro vận hành"],
+    ["Đặng Hồng Lĩnh",3,4,3,1,11,-2,"Có cải thiện","3. Rủi ro vận hành"],
+    ["Phan Văn Quân",2,4,2,2,10,0,"Có cải thiện","3. Rủi ro vận hành"],
+    ["Bùi Việt Đức",0,2,4,3,9,-1,"Có cải thiện","3. Rủi ro vận hành"],
+    ["Phạm Tiến Bình",1,0,0,5,6,5,"Cảnh báo","2. Biến động"],
+    ["Phạm Văn Bắc",2,1,0,2,5,2,"Cảnh báo","2. Biến động"],
+    ["Phạm Thế Tuấn",0,2,0,3,5,3,"Cảnh báo","2. Biến động"],
+    ["Phạm Khương Duy",1,2,0,2,5,2,"Cảnh báo","2. Biến động"],
+    ["Nguyễn Tài Khánh",2,1,0,2,5,2,"Cảnh báo","2. Biến động"],
+    ["Lê Văn Sơn",1,1,1,2,5,1,"Cảnh báo","2. Biến động"],
+    ["Phạm Ngọc Hoàn",0,1,2,0,3,-2,"Có cải thiện","2. Biến động"],
+    ["Nguyễn Văn Giáp",2,0,0,0,2,0,"Có cải thiện","1. Ổn định"]
+  ]
+};
+
+let charts={};
+
+function levelClass(lv){
+  if(lv.startsWith("3"))return"p-r";
+  if(lv.startsWith("2"))return"p-o";
+  if(lv.startsWith("1"))return"p-g";
+  return"p-y";
+}
+function evalClass(e){return e.includes("Cảnh báo")?"p-r":"p-g";}
+
+function render(data){
+  // KPIs
+  const totalQ = data.tinh.reduce((s,r)=>s+r[4],0);
+  const totalW28 = data.am.reduce((s,r)=>s+r[4],0);
+  const totalW27 = data.am.reduce((s,r)=>s+r[3],0);
+  const warnAM = data.am.filter(r=>r[7].includes("Cảnh báo")).length;
+  const riskAM = data.am.filter(r=>r[8].startsWith("3")).length;
+  const deltaW = totalW28-totalW27;
+  const kpis=[
+    {l:"Tổng nghỉ Q (T4-6)",v:totalQ,d:"6 tỉnh",cls:""},
+    {l:"Nghỉ tuần W28",v:totalW28,d:(deltaW>=0?"▲ +":"▼ ")+deltaW+" so W27",cls:deltaW>0?"up":"down"},
+    {l:"AM cảnh báo",v:warnAM,d:"cần theo dõi",cls:"up"},
+    {l:"AM rủi ro vận hành",v:riskAM,d:"mức độ 3",cls:"up"}
+  ];
+  document.getElementById("kpis").innerHTML=kpis.map(k=>
+    `<div class="kpi"><div class="l">${k.l}</div><div class="v">${k.v}</div>
+     <div class="d ${k.cls}">${k.d}</div></div>`).join("");
+
+  // Chart Tỉnh
+  const tinhSorted=[...data.tinh].sort((a,b)=>b[4]-a[4]);
+  drawBar("chartTinh","chartTinh_i",tinhSorted.map(r=>r[0]),tinhSorted.map(r=>r[4]),
+    tinhSorted.map(r=>{const t=r[4];return t>=50?'#ef4444':t>=35?'#f97316':t>=25?'#eab308':'#22c55e'}));
+
+  // Chart AM (top theo tổng)
+  const amTop=[...data.am].sort((a,b)=>b[5]-a[5]).slice(0,10);
+  drawBar("chartAM","chartAM_i",amTop.map(r=>r[0]),amTop.map(r=>r[5]),
+    amTop.map(r=>r[8].startsWith("3")?'#ef4444':r[8].startsWith("2")?'#f97316':'#22c55e'),true);
+
+  // Table
+  const tb=document.querySelector("#tblAM tbody");
+  tb.innerHTML=[...data.am].sort((a,b)=>b[5]-a[5]).map(r=>{
+    const d=r[6],dTxt=(d>0?"▲ +":d<0?"▼ ":"— ")+d;
+    const dCls=d>0?"up":d<0?"down":"";
+    return `<tr>
+      <td>${r[0]}</td><td class="num">${r[1]||''}</td><td class="num">${r[2]||''}</td>
+      <td class="num">${r[3]||''}</td><td class="num"><b>${r[4]||''}</b></td>
+      <td class="num"><b>${r[5]}</b></td>
+      <td class="num ${dCls}">${dTxt}</td>
+      <td><span class="pill ${evalClass(r[7])}">${r[7]}</span></td>
+      <td><span class="pill ${levelClass(r[8])}">${r[8]}</span></td>
+    </tr>`;}).join("");
+
+  document.getElementById("ts").textContent=new Date().toLocaleString('vi-VN');
+}
+
+function drawBar(id,key,labels,vals,colors,horizontal){
+  if(charts[key])charts[key].destroy();
+  const ctx=document.getElementById(id);
+  charts[key]=new Chart(ctx,{
+    type:'bar',
+    data:{labels,datasets:[{data:vals,backgroundColor:colors,borderRadius:6,barThickness:horizontal?16:28}]},
+    options:{
+      indexAxis:horizontal?'y':'x',
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},
+        tooltip:{backgroundColor:'#132743',borderColor:'#22406b',borderWidth:1}},
+      scales:{
+        x:{ticks:{color:'#9db3d1',font:{size:11}},grid:{color:'rgba(34,64,107,.4)'}},
+        y:{ticks:{color:'#9db3d1',font:{size:11}},grid:{color:'rgba(34,64,107,.4)'}}
+      }
+    }
+  });
+  // data labels
+  charts[key].options.animation={onComplete:()=>{
+    const c=charts[key],a=c.ctx;a.fillStyle='#e8eef7';a.font='bold 11px Segoe UI';
+    a.textAlign=horizontal?'left':'center';a.textBaseline='middle';
+    c.data.datasets[0].data.forEach((v,i)=>{
+      const m=c.getDatasetMeta(0).data[i];
+      if(horizontal)a.fillText(v,m.x+6,m.y);
+      else a.fillText(v,m.x,m.y-10);
+    });
+  }};
+  charts[key].update();
+}
+
+// ===== ĐỌC TỰ ĐỘNG TỪ GOOGLE SHEET =====
+// Lưu ý: file pivot có cấu trúc nhiều bảng, cần parse theo mốc dòng.
+function parseCSV(text){
+  const rows=text.split(/\r?\n/).map(l=>{
+    const out=[];let cur='',q=false;
+    for(let i=0;i<l.length;i++){const c=l[i];
+      if(c=='"'){if(q&&l[i+1]=='"'){cur+='"';i++}else q=!q}
+      else if(c==','&&!q){out.push(cur);cur=''}else cur+=c}
+    out.push(cur);return out;});
+  return rows;
+}
+function num(x){const n=parseInt((x||'').replace(/[^\d-]/g,''));return isNaN(n)?0:n;}
+
+function extract(rows){
+  const data={tinh:[],am:[]};
+  const TINH=["Vĩnh Phúc","Hòa Bình","Phú Thọ","Hà Nam","Nam Định","Ninh Bình"];
+  // Khối tỉnh: dòng có tên tỉnh ở cột 0, sau header "Tỉnh"
+  rows.forEach(r=>{
+    if(TINH.includes((r[0]||'').trim()) && r[4]!==undefined && num(r[4])>0){
+      data.tinh.push([r[0].trim(),num(r[1]),num(r[2]),num(r[3]),num(r[4]),num(r[5])]);
+    }
+  });
+  // Khối AM tuần: header "AM phụ trách" với cột 1..4 = 25,26,27,28 và cột "Mức độ ảnh hưởng"
+  let inAMweek=false;
+  for(let i=0;i<rows.length;i++){
+    const r=rows[i];
+    if((r[0]||'').trim()==="AM phụ trách" && (r[1]||'').trim()==="25"){inAMweek=true;continue;}
+    if(inAMweek){
+      const name=(r[0]||'').trim();
+      if(!name||name==="Grand Total"){inAMweek=false;continue;}
+      const w25=num(r[1]),w26=num(r[2]),w27=num(r[3]),w28=num(r[4]),tot=num(r[5]);
+      if(tot>0||w28>0){
+        data.am.push([name,w25,w26,w27,w28,tot,num(r[6]),(r[7]||'').trim()||'—',(r[8]||'').trim()||'1. Ổn định']);
+      }
+    }
+  }
+  if(data.tinh.length===0)data.tinh=SAMPLE.tinh;
+  if(data.am.length===0)data.am=SAMPLE.am;
+  return data;
+}
+
+async function loadFromUrl(){
+  const url=document.getElementById("url").value.trim();
+  if(!url){alert("Dán link CSV Google Sheet trước nhé");return;}
+  document.getElementById("srcState").textContent="Đang tải...";
+  try{
+    const res=await fetch(url);
+    const txt=await res.text();
+    const data=extract(parseCSV(txt));
+    render(data);
+    document.getElementById("srcState").textContent="✅ Đã cập nhật từ Sheet lúc "+new Date().toLocaleTimeString('vi-VN');
+  }catch(e){
+    document.getElementById("srcState").textContent="❌ Lỗi tải (kiểm tra Publish to web / CORS)";
+    console.error(e);
+  }
+}
+
+// Khởi động với dữ liệu mẫu
+render(SAMPLE);
+</script>
+</body>
+</html>
