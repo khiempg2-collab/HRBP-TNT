@@ -95,8 +95,10 @@ nav .wrap{display:flex;align-items:center;gap:18px;height:62px}
 table{width:100%;border-collapse:collapse;font-size:12.5px}
 thead th{position:sticky;top:0;background:var(--cardH);z-index:2}
 th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+td.c,th.c{text-align:center}
 th{color:var(--ink2);font-weight:600;font-size:10.5px;text-transform:uppercase;letter-spacing:.5px}
-td.n{text-align:right;font-variant-numeric:tabular-nums;font-family:'JetBrains Mono';font-size:12px}
+td.n{text-align:center;font-variant-numeric:tabular-nums;font-family:'JetBrains Mono';font-size:12px}
+th.n,thead th.n{text-align:center}
 tbody tr:hover td{background:var(--cardH)}
 .pill{display:inline-block;padding:2.5px 9px;border-radius:11px;font-size:10.5px;font-weight:700;white-space:nowrap}
 .p-r{background:rgba(239,83,80,.16);color:#fca5a5} .p-o{background:rgba(247,165,59,.16);color:#fbc97a}
@@ -216,8 +218,8 @@ nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);
 #t0 .sec-head h2{font-family:'Sora';font-weight:700;font-size:30px;letter-spacing:-.5px}
 #t0 .sec-head p{color:var(--ink3);font-size:14px;max-width:420px;margin-top:6px}
 #t0 .tab-label{font-family:'JetBrains Mono';font-size:12px;color:var(--blueL);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
-#t0 .mods{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-@media(max-width:900px){#t0 .mods{grid-template-columns:1fr 1fr}}
+#t0 .mods{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+@media(max-width:1100px){#t0 .mods{grid-template-columns:1fr 1fr}}
 @media(max-width:600px){#t0 .mods{grid-template-columns:1fr}}
 #t0 .mod{position:relative;background:var(--card);border:1px solid var(--line);border-radius:16px;
   padding:24px;text-decoration:none;color:inherit;transition:.2s;display:flex;flex-direction:column;min-height:170px}
@@ -333,46 +335,34 @@ footer{border-top:1px solid var(--line);background:var(--bg2);padding:40px 0}
       <div>
         <div class="tab-label">Phân hệ · Modules</div>
         <h2>Các bảng dữ liệu</h2>
-        <p>Bắt đầu với bảng Nghỉ việc. Các phân hệ khác sẽ được bổ sung dần theo nhu cầu vận hành.</p>
+        <p>4 bảng báo cáo nhân sự, dữ liệu cập nhật tự động từ Google Sheet. Bấm để mở.</p>
       </div>
     </div>
     <div class="mods sg">
-      <a href="#" onclick="go('t3');return false;" class="mod live">
-        <div class="ico">📉</div>
-        <h3>Nghỉ việc <span class="chip on">Đang chạy</span></h3>
-        <p>Nghỉ việc theo AM, tỉnh và bưu cục · xu hướng theo tuần · cảnh báo mức độ ảnh hưởng.</p>
+      <a href="#" onclick="go('t1');return false;" class="mod live">
+        <div class="ico">👥</div>
+        <h3>1 · Tổng quan Nhân sự <span class="chip on">Đang chạy</span></h3>
+        <p>Cơ cấu nhân sự theo AM và chức vụ · phân bổ HRBP phụ trách trên 6 tỉnh.</p>
         <span class="go">Mở bảng <span class="ar">→</span></span>
       </a>
-      <div class="mod soon">
+      <a href="#" onclick="go('t2');return false;" class="mod live">
+        <div class="ico">📅</div>
+        <h3>2 · Thâm niên <span class="chip on">Đang chạy</span></h3>
+        <p>Phân bố thâm niên NVXL và NVPTTT · KPI tỷ lệ thâm niên trên 3 tháng.</p>
+        <span class="go">Mở bảng <span class="ar">→</span></span>
+      </a>
+      <a href="#" onclick="go('t3');return false;" class="mod live">
+        <div class="ico">📉</div>
+        <h3>3 · Tỷ lệ Nghỉ việc <span class="chip on">Đang chạy</span></h3>
+        <p>Nghỉ việc theo tuần và tháng · theo tỉnh và AM · cảnh báo mức độ ảnh hưởng.</p>
+        <span class="go">Mở bảng <span class="ar">→</span></span>
+      </a>
+      <a href="#" onclick="go('t4');return false;" class="mod live">
         <div class="ico">🎯</div>
-        <h3>Fill Rate <span class="chip next">Sắp có</span></h3>
-        <p>Tỷ lệ lấp đầy nhân sự theo bưu cục · gap tuyển dụng · ưu tiên theo tỉnh khó tuyển.</p>
-        <span class="go" style="color:var(--ink3)">Đang xây dựng</span>
-      </div>
-      <div class="mod soon">
-        <div class="ico">🔄</div>
-        <h3>Turnover <span class="chip next">Sắp có</span></h3>
-        <p>Tỷ lệ biến động nhân sự · thâm niên nghỉ · so sánh cùng kỳ giữa các vùng.</p>
-        <span class="go" style="color:var(--ink3)">Đang xây dựng</span>
-      </div>
-      <div class="mod soon">
-        <div class="ico">📦</div>
-        <h3>Năng suất <span class="chip next">Sắp có</span></h3>
-        <p>Sản lượng theo NVPTTT · %GTC / %LTC · so sánh tuần trước theo bưu cục.</p>
-        <span class="go" style="color:var(--ink3)">Đang xây dựng</span>
-      </div>
-      <div class="mod soon">
-        <div class="ico">🏆</div>
-        <h3>AM Scorecard <span class="chip next">Sắp có</span></h3>
-        <p>Bảng điểm tổng hợp từng AM · xếp hạng · các chỉ số then chốt trên một dòng.</p>
-        <span class="go" style="color:var(--ink3)">Đang xây dựng</span>
-      </div>
-      <div class="mod soon">
-        <div class="ico">⚡</div>
-        <h3>Ưu tiên hằng ngày <span class="chip next">Sắp có</span></h3>
-        <p>Danh sách việc cần xử lý sáng mỗi ngày · điểm nóng cần can thiệp ngay.</p>
-        <span class="go" style="color:var(--ink3)">Đang xây dựng</span>
-      </div>
+        <h3>4 · Định biên <span class="chip on">Đang chạy</span></h3>
+        <p>Thiếu hụt NVPTTT theo bưu cục · tỷ lệ lấp đầy · lọc theo tỉnh và tìm kiếm.</p>
+        <span class="go">Mở bảng <span class="ar">→</span></span>
+      </a>
     </div>
   </div>
 </section>
@@ -403,7 +393,7 @@ footer{border-top:1px solid var(--line);background:var(--bg2);padding:40px 0}
     <div class="grid2">
       <div class="panel sg"><h3>Nhân sự theo HRBP phụ trách</h3><div class="cb"><canvas id="c1c"></canvas></div></div>
       <div class="panel sg"><h3>Chi tiết phân bổ AM</h3>
-        <div class="tw"><table id="tb1"><thead><tr><th>AM</th><th class="n">Acting AM</th><th class="n">Area Mgr</th><th class="n">NVPTTT</th><th class="n">NVXL</th><th class="n">Tổng</th><th>Quy mô</th></tr></thead><tbody></tbody></table></div>
+        <div class="tw"><table id="tb1"><thead><tr><th>AM</th><th class="n">Acting AM</th><th class="n">Area Mgr</th><th class="n">NVPTTT</th><th class="n">NVXL</th><th class="n">Tổng</th><th class="c">Quy mô</th></tr></thead><tbody></tbody></table></div>
       </div>
     </div>
   </div>
@@ -424,7 +414,7 @@ footer{border-top:1px solid var(--line);background:var(--bg2);padding:40px 0}
     </div>
     <div class="panel sg"><h3>So sánh tỷ lệ thâm niên trên 3 tháng<span class="note">Ngưỡng mục tiêu 70%</span></h3><div class="cb short"><canvas id="c2c"></canvas></div></div>
     <div class="panel sg"><h3>Chi tiết phân bố thâm niên</h3>
-      <div class="tw"><table id="tb2"><thead><tr><th>Nhóm thâm niên</th><th class="n">NVPTTT</th><th>Tỷ trọng</th><th class="n">NVXL</th><th>Tỷ trọng</th></tr></thead><tbody></tbody></table></div>
+      <div class="tw"><table id="tb2"><thead><tr><th>Nhóm thâm niên</th><th class="n">NVPTTT</th><th class="c">Tỷ trọng</th><th class="n">NVXL</th><th class="c">Tỷ trọng</th></tr></thead><tbody></tbody></table></div>
     </div>
   </div>
 </div>
@@ -444,10 +434,10 @@ footer{border-top:1px solid var(--line);background:var(--bg2);padding:40px 0}
     </div>
     <div class="panel sg"><h3>Top AM nghỉ việc theo tháng<span class="note">Tổng T5–T7</span></h3><div class="cb tall"><canvas id="c3c"></canvas></div></div>
     <div class="panel sg"><h3>Chi tiết nghỉ việc theo AM · Tuần W25→W28</h3>
-      <div class="tw"><table id="tb3"><thead><tr><th>AM phụ trách</th><th class="n">W25</th><th class="n">W26</th><th class="n">W27</th><th class="n">W28</th><th class="n">Tổng</th><th class="n">Δ W28/W27</th><th>Đánh giá</th><th>Mức độ ảnh hưởng</th></tr></thead><tbody></tbody></table></div>
+      <div class="tw"><table id="tb3"><thead><tr><th>AM phụ trách</th><th class="n">W25</th><th class="n">W26</th><th class="n">W27</th><th class="n">W28</th><th class="n">Tổng</th><th class="n">Δ W28/W27</th><th class="c">Đánh giá</th><th class="c">Mức độ ảnh hưởng</th></tr></thead><tbody></tbody></table></div>
     </div>
     <div class="panel sg"><h3>Chi tiết nghỉ việc theo AM · Tháng T5→T7</h3>
-      <div class="tw"><table id="tb3b"><thead><tr><th>AM phụ trách</th><th class="n">T5</th><th class="n">T6</th><th class="n">T7</th><th class="n">Tổng</th><th class="n">Δ T7/T6</th><th>Đánh giá</th></tr></thead><tbody></tbody></table></div>
+      <div class="tw"><table id="tb3b"><thead><tr><th>AM phụ trách</th><th class="n">T5</th><th class="n">T6</th><th class="n">T7</th><th class="n">Tổng</th><th class="n">Δ T7/T6</th><th class="c">Đánh giá</th></tr></thead><tbody></tbody></table></div>
     </div>
   </div>
 </div>
@@ -479,7 +469,7 @@ footer{border-top:1px solid var(--line);background:var(--bg2);padding:40px 0}
         <span class="chip" data-p="Ninh Bình" onclick="fp('Ninh Bình')">Ninh Bình</span>
         <input class="search" id="q4" placeholder="Tìm bưu cục / AM…" oninput="rt4()">
       </div>
-      <div class="tw"><table id="tb4"><thead><tr><th>Bưu cục</th><th>Huyện</th><th>AM</th><th class="n">Định biên</th><th class="n">Hiện hữu</th><th class="n">Thiếu</th><th>Tỷ lệ thiếu</th><th>Tỉnh</th></tr></thead><tbody></tbody></table></div>
+      <div class="tw"><table id="tb4"><thead><tr><th>Bưu cục</th><th>Huyện</th><th>AM</th><th class="n">Định biên</th><th class="n">Hiện hữu</th><th class="n">Thiếu</th><th class="c">Tỷ lệ thiếu</th><th class="c">Tỉnh</th></tr></thead><tbody></tbody></table></div>
     </div>
   </div>
 </div>
@@ -678,7 +668,7 @@ function r1(){
     const col=r[5]>=90?C.risk:r[5]>=70?C.warn:C.blue;
     return `<tr><td>${r[0]}</td><td class="n">${r[1]||''}</td><td class="n">${r[2]||''}</td>
       <td class="n">${fmt(r[3])}</td><td class="n">${fmt(r[4])}</td><td class="n"><b>${fmt(r[5])}</b></td>
-      <td><span class="bar" style="width:74px"><i style="width:${w}%;background:${col}"></i></span></td></tr>`;
+      <td class="c"><span class="bar" style="width:74px"><i style="width:${w}%;background:${col}"></i></span></td></tr>`;
   }).join('');
 }
 
@@ -715,9 +705,9 @@ function r2(){
   const map={}; a.forEach(r=>map[short(r[0])]={p:r[1],x:0}); b.forEach(r=>{const k=short(r[0]); map[k]=map[k]||{p:0,x:0}; map[k].x=r[1]});
   document.querySelector('#tb2 tbody').innerHTML=Object.entries(map).map(([k,v])=>
     `<tr><td>${k}</td><td class="n">${fmt(v.p)}</td>
-     <td><span class="bar" style="width:66px"><i style="width:${Math.round(v.p/ta*100*3)}%;background:${C.blue}"></i></span> <span class="mono" style="font-size:10.5px;color:var(--ink3)">${pct(v.p/ta)}</span></td>
+     <td class="c"><span class="bar" style="width:66px"><i style="width:${Math.round(v.p/ta*100*3)}%;background:${C.blue}"></i></span> <span class="mono" style="font-size:10.5px;color:var(--ink3)">${pct(v.p/ta)}</span></td>
      <td class="n">${fmt(v.x)}</td>
-     <td><span class="bar" style="width:66px"><i style="width:${Math.round(v.x/tb*100*2.6)}%;background:${C.ok}"></i></span> <span class="mono" style="font-size:10.5px;color:var(--ink3)">${pct(v.x/tb)}</span></td></tr>`
+     <td class="c"><span class="bar" style="width:66px"><i style="width:${Math.round(v.x/tb*100*2.6)}%;background:${C.ok}"></i></span> <span class="mono" style="font-size:10.5px;color:var(--ink3)">${pct(v.x/tb)}</span></td></tr>`
   ).join('');
 }
 
@@ -763,15 +753,15 @@ function r3(){
     const d=r[6], t=(d>0?'▲ +':d<0?'▼ ':'— ')+d, c=d>0?'up':d<0?'down':'flat';
     return `<tr><td>${r[0]||'(Không rõ)'}</td><td class="n">${r[1]||''}</td><td class="n">${r[2]||''}</td>
       <td class="n">${r[3]||''}</td><td class="n"><b>${r[4]||''}</b></td><td class="n"><b>${r[5]}</b></td>
-      <td class="n ${c}">${t}</td><td>${r[7]?`<span class="pill ${ev(r[7])}">${r[7]}</span>`:''}</td>
-      <td>${r[8]?`<span class="pill ${lv(r[8])}">${r[8]}</span>`:''}</td></tr>`;
+      <td class="n ${c}">${t}</td><td class="c">${r[7]?`<span class="pill ${ev(r[7])}">${r[7]}</span>`:''}</td>
+      <td class="c">${r[8]?`<span class="pill ${lv(r[8])}">${r[8]}</span>`:''}</td></tr>`;
   }).join('');
 
   document.querySelector('#tb3b tbody').innerHTML=ms.map(r=>{
     const d=r[5], t=(d>0?'▲ +':d<0?'▼ ':'— ')+d, c=d>0?'up':d<0?'down':'flat';
     return `<tr><td>${r[0]||'(Không rõ)'}</td><td class="n">${r[1]||''}</td><td class="n">${r[2]||''}</td>
       <td class="n">${r[3]||''}</td><td class="n"><b>${r[4]}</b></td><td class="n ${c}">${t}</td>
-      <td>${r[6]?`<span class="pill ${ev(r[6])}">${r[6]}</span>`:''}</td></tr>`;
+      <td class="c">${r[6]?`<span class="pill ${ev(r[6])}">${r[6]}</span>`:''}</td></tr>`;
   }).join('');
 }
 
@@ -787,9 +777,9 @@ function rt4(){
     return `<tr><td style="max-width:230px;overflow:hidden;text-overflow:ellipsis">${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td>
       <td class="n">${r[3]}</td><td class="n">${r[4]}</td>
       <td class="n"><b style="color:${r[5]>0?col:'var(--ink3)'}">${r[5]||'—'}</b></td>
-      <td><span class="bar" style="width:58px"><i style="width:${Math.min(p*2,100)}%;background:${col}"></i></span>
+      <td class="c"><span class="bar" style="width:58px"><i style="width:${Math.min(p*2,100)}%;background:${col}"></i></span>
           <span class="mono" style="font-size:10.5px;color:var(--ink3)">${p}%</span></td>
-      <td><span class="pill p-b">${r[7]}</span></td></tr>`;
+      <td class="c"><span class="pill p-b">${r[7]}</span></td></tr>`;
   }).join('') || `<tr><td colspan="8" style="text-align:center;color:var(--ink3);padding:20px">Không có bưu cục phù hợp</td></tr>`;
 }
 function r4(){
