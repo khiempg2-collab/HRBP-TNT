@@ -598,13 +598,20 @@ function ex4(r){ // Định biên — header: STT|Bưu cục|Huyện|AM|Định 
   if(h<0)return{rows:null};
   // cột Tỉnh/HRBP suy từ mã bưu cục nếu không có cột riêng
   const provMap={VPH:'Vĩnh Phúc',PTH:'Phú Thọ',HBI:'Hòa Bình',HNA:'Hà Nam',NDI:'Nam Định',NBI:'Ninh Bình'};
+  // Tỷ lệ có thể là "22%" (đã %) hoặc 0.22 (thập phân) — chuẩn hoá về số phần trăm
+  const toPct = x => {
+    const s=String(x||'');
+    if(s.includes('%')) return Math.round(N(s)*10)/10;      // "22%" -> 22
+    const v=N(s);
+    return Math.round((v<=1? v*100 : v)*10)/10;             // 0.22 -> 22 ; 22 -> 22
+  };
   for(let i=h+1;i<r.length;i++){
     const bc=S(r[i][cBc]); if(!bc||/Tổng/i.test(bc))continue;
     const m=bc.match(/\(([A-Z]{3})\)/);
     const prov=m?provMap[m[1]]||'':'';
     o.push([bc, S(r[i][cHuyen]||''), S(r[i][cAM]||''),
       N(r[i][cDb]), N(r[i][cHh]), N(r[i][cThieu]),
-      Math.round(N(r[i][cRate])*1000)/10, prov, '']);
+      toPct(r[i][cRate]), prov, '']);
   }
   return {rows:o.length?o:null};
 }
