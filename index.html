@@ -528,71 +528,83 @@ const N = x => { const v=parseFloat(String(x||'').replace(/[^\d.-]/g,'')); retur
 const S = x => String(x||'').trim();
 
 /* ---------- EXTRACT từng sheet ---------- */
-function ex1(r){ // Tổng quan
+function ex1(r){ // Tổng quan — khối "Cơ cấu phân bổ" có header: AM|Acting|Area Manager|Business Dev|Operations|Grand Total
   const am=[],hrbp=[]; const PR=['Vĩnh Phúc','Phú Thọ','Nam Định','Ninh Bình','Hòa Bình','Hà Nam'];
   let h=-1;
-  for(let i=0;i<r.length;i++){ if(S(r[i][0])==='AM'&&S(r[i][1]).includes('Acting')){h=i;break} }
+  for(let i=0;i<r.length;i++){ if(S(r[i][0])==='AM'&&/Acting/i.test(S(r[i][1]))){h=i;break} }
   if(h>=0) for(let i=h+1;i<r.length;i++){
-    const n=S(r[i][0]); if(!n||n==='Grand Total')break;
+    const n=S(r[i][0]); if(!n)continue; if(/Grand Total|Tổng/i.test(n))break;
     am.push([n,N(r[i][1]),N(r[i][2]),N(r[i][3]),N(r[i][4]),N(r[i][5])]);
   }
+  // HRBP: khối "Số lượng nhân sự" — tỉnh | HRBP | số lượng
   for(let i=0;i<r.length;i++){ const n=S(r[i][0]);
     if(PR.includes(n)&&S(r[i][1])&&N(r[i][2])>0) hrbp.push([n,S(r[i][1]),N(r[i][2])]);
   }
   return {am:am.length?am:null, hrbp:hrbp.length?hrbp:null};
 }
+
 function ex2(r){ // Thâm niên
   const a=[],b=[],prov=[],am=[];
-  const PR=['Vĩnh Phúc','Hòa Bình','Phú Thọ','Hà Nam','Nam Định','Ninh Bình'];
+  // Khối 1&2: phân bố nhóm G01-G10 (cột A/B = NVXL, cột D/E = NVPTTT)
   for(const row of r){
-    if(S(row[0]).startsWith('G0')||S(row[0]).startsWith('G1')) a.push([S(row[0]),N(row[1])]);
-    if(S(row[3]).startsWith('G0')||S(row[3]).startsWith('G1')) b.push([S(row[3]),N(row[4])]);
+    if(/^G\d/.test(S(row[0]))) a.push([S(row[0]),N(row[1])]);
+    if(/^G\d/.test(S(row[3]))) b.push([S(row[3]),N(row[4])]);
   }
-  // Khối 3: theo Tỉnh — cột A/B/C/D = tên, >3th, tổng, tỷ lệ (tuỳ layout)
-  for(const row of r){
-    const nm=S(row[0]);
-    if(PR.includes(nm)){
-      const g=N(row[2]), t=N(row[3]), rate=N(row[4]);
-      if(t>0) prov.push([nm,g,t,rate>0?rate:(t?g/t:0)]);
-    }
-  }
-  // Khối 4: theo AM — có KPI + Thực đạt ở các cột sau
-  for(const row of r){
-    const nm=S(row[0]);
-    if(!nm||PR.includes(nm)||nm.startsWith('G0')||nm.startsWith('G1'))continue;
-    if(nm.includes('Tổng')||nm.includes('Grand')||nm.includes('Tỷ lệ')||nm.includes('Thâm niên'))continue;
-    const g=N(row[2]), t=N(row[3]), rate=N(row[4]), kpi=N(row[5]), td=N(row[6]);
-    if(t>0&&kpi>0) am.push([nm,g,t,rate>0?rate:(t?g/t:0),kpi,td]);
-  }
-  return {nvxl:a.length?a:null, nvpt:b.length?b:null, prov:prov.length?prov:null, am:am.length?am:null};
+  // Khối 3 (Tỉnh) & 4 (AM): pivot KHÔNG xuất tên ra CSV, nên KHÔNG đọc tự động
+  // (tránh map sai thứ tự). Giữ số đã tính sẵn trong FALLBACK. Chỉ cập nhật khi
+  // Sheet có cột tên rõ ràng — khi đó bật lại đoạn map bên dưới.
+  return {nvxl:a.length?a:null, nvpt:b.length?b:null, prov:null, am:null};
 }
-function ex3(r){ // Nghỉ việc
+
+function ex3(r){ // Nghỉ việc — 3 khối dọc: tuần(25-28), tháng(5-7), tỉnh
   const wk=[],mo=[],pr=[]; const PR=['Vĩnh Phúc','Hòa Bình','Phú Thọ','Hà Nam','Nam Định','Ninh Bình'];
   let hw=-1,hm=-1,hp=-1;
   for(let i=0;i<r.length;i++){
     const a=S(r[i][0]);
-    if(a==='AM phụ trách'&&S(r[i][1])==='25'&&hw<0) hw=i;
-    else if(a==='AM phụ trách'&&S(r[i][1])==='5'&&hm<0) hm=i;
-    else if(a==='Tỉnh'&&S(r[i][1])==='5'&&hp<0) hp=i;
+    // header tuần: "AM phụ trách" + cột B=25
+    if(a==='AM phụ trách'&&N(r[i][1])===25&&hw<0) hw=i;
+    // header tháng: "AM phụ trách" + cột B=5
+    else if(a==='AM phụ trách'&&N(r[i][1])===5&&hm<0) hm=i;
+    // header tỉnh: "Tỉnh" + cột B=5
+    else if(a==='Tỉnh'&&N(r[i][1])===5&&hp<0) hp=i;
   }
   if(hw>=0) for(let i=hw+1;i<r.length;i++){ const n=S(r[i][0]);
-    if(!n||n==='Tổng cộng')break;
+    if(/Tổng cộng/i.test(n))break; if(!n)continue;
     wk.push([n,N(r[i][1]),N(r[i][2]),N(r[i][3]),N(r[i][4]),N(r[i][5]),N(r[i][6]),S(r[i][7]),S(r[i][8])]); }
   if(hm>=0) for(let i=hm+1;i<r.length;i++){ const n=S(r[i][0]);
-    if(!n||n==='Tổng cộng')break;
+    if(/Tổng cộng/i.test(n))break; if(!n)continue;
     mo.push([n,N(r[i][1]),N(r[i][2]),N(r[i][3]),N(r[i][4]),N(r[i][5]),S(r[i][6]),S(r[i][7])]); }
   if(hp>=0) for(let i=hp+1;i<r.length;i++){ const n=S(r[i][0]);
-    if(!n||n==='Tổng cộng')break;
+    if(/Tổng cộng/i.test(n))break;
     if(PR.includes(n)) pr.push([n,N(r[i][1]),N(r[i][2]),N(r[i][3]),N(r[i][4]),N(r[i][5])]); }
   return {week:wk.length?wk:null, month:mo.length?mo:null, prov:pr.length?pr:null};
 }
-function ex4(r){ // Định biên
-  const o=[];let h=-1;
-  for(let i=0;i<r.length;i++){ if(S(r[i][1])==='Bưu cục'||S(r[i][1]).includes('Bưu cục')){h=i;break} }
+
+function ex4(r){ // Định biên — header: STT|Bưu cục|Huyện|AM|Định biên|Hiện hữu|...|Tỷ lệ thiếu
+  const o=[];let h=-1,cBc=1,cHuyen=2,cAM=3,cDb=4,cHh=5,cThieu=7,cRate=8;
+  for(let i=0;i<r.length;i++){
+    const row=r[i].map(S);
+    const bi=row.findIndex(x=>/^Bưu cục$/i.test(x));
+    if(bi>=0){ h=i; cBc=bi;
+      cHuyen=row.findIndex(x=>/Huyện/i.test(x));
+      cAM=row.findIndex(x=>/^AM$/i.test(x));
+      cDb=row.findIndex(x=>/Định biên/i.test(x));
+      cHh=row.findIndex(x=>/hiện h/i.test(x));
+      cThieu=row.findIndex(x=>/thiếu hiện|Số thiếu hiện/i.test(x));
+      if(cThieu<0) cThieu=row.findIndex(x=>/^Số thiếu/i.test(x));
+      cRate=row.findIndex(x=>/Tỷ lệ thiếu/i.test(x));
+      break; }
+  }
   if(h<0)return{rows:null};
+  // cột Tỉnh/HRBP suy từ mã bưu cục nếu không có cột riêng
+  const provMap={VPH:'Vĩnh Phúc',PTH:'Phú Thọ',HBI:'Hòa Bình',HNA:'Hà Nam',NDI:'Nam Định',NBI:'Ninh Bình'};
   for(let i=h+1;i<r.length;i++){
-    const bc=S(r[i][1]); if(!bc)continue;
-    o.push([bc,S(r[i][2]),S(r[i][3]),N(r[i][4]),N(r[i][5]),N(r[i][7]),Math.round(N(r[i][8])*1000)/10,S(r[i][12]),S(r[i][13])]);
+    const bc=S(r[i][cBc]); if(!bc||/Tổng/i.test(bc))continue;
+    const m=bc.match(/\(([A-Z]{3})\)/);
+    const prov=m?provMap[m[1]]||'':'';
+    o.push([bc, S(r[i][cHuyen]||''), S(r[i][cAM]||''),
+      N(r[i][cDb]), N(r[i][cHh]), N(r[i][cThieu]),
+      Math.round(N(r[i][cRate])*1000)/10, prov, '']);
   }
   return {rows:o.length?o:null};
 }
